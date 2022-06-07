@@ -1,8 +1,9 @@
 #include <iostream>
 #include <vector>
-#include<time.h>
 #include <cmath>
-
+//PROBLEMA TSTEP VELOCIDAD NO SE ACTUALIZA
+//Variables globales
+double dt = 604800; //Una semana
 //Clase para cada cuerpo 
 class cuerpo {
 
@@ -32,34 +33,60 @@ void cuerpo::print(){
 
 //Operaciones con cuerpos
 
-	//Distancia entre dos cuerpos (Incompleto)
-	double R(cuerpo a, cuerpo b);
+	//Calcula la nueva velocidad de los 2 cuerpos ( a1 = Gm2r/|r|^3 ) ( Vnew = V0 + dt*a1 )
+	void NewV(cuerpo a, cuerpo b);
 
 	
 int main(){
 
-	srand(time(0));
 	std::vector<cuerpo>Sistema;
-	cuerpo c0;
-	for (int i = 0; i < 3; i++){
-		
-		c0.init(rand()%9+1,rand()%9+1,rand()%9+1,rand()%9+1,rand()%9+1,rand()%9+1,rand()%9+1);
-		Sistema.push_back(c0);
-	}
-	Sistema.at(0).print();
-	Sistema.at(1).print();
-	Sistema.at(2).print();
 	
-	std::cout<< R(Sistema.at(0),Sistema.at(1)) << "\n";
+	cuerpo Sol;
+	cuerpo c1;
+
+	double Msol = 0.45*pow(10,10);
+	double Mc1 = 0.45*pow(10,5);
+	double dis = 10;
+	
+	Sol.init(Msol,0,0,0,0,0,0);
+	c1.init(Mc1,dis,0,0,0,0,0);
+	Sistema.push_back(Sol);
+	Sistema.push_back(c1);
+
+	NewV(Sistema.at(0),Sistema.at(1));
+	
 	return 0;
 }
 
-double R(cuerpo a, cuerpo b){
-	
+
+void NewV(cuerpo a, cuerpo b){
+
+	std::vector<double> R{0,0,0};
 	double r = 0;
+
+	// Distancia entre los dos cuerpos
 	for (int i=0; i <= 2; i++){
-		r += pow((a.x.at(i)-b.x.at(i)),2);
+		
+		R.at(i) = (a.x.at(i)-b.x.at(i));
+		r += pow(R.at(i),2);
 	}
 	r = sqrt(r);
-	return r;
+	
+	double r3 = pow(r,3);
+	double G = 6.6738*pow(10,-11);
+
+	// F = -Gm1m2/|r|^3 * r y F = ma
+	double Aa = -G*b.m/r3;
+	double Ab = -G*a.m/r3;
+
+	//Actualizamos la velocidad de los cuerpos v = a*dt
+
+	a.v.at(0) += Aa*R.at(0)*dt;
+	a.v.at(1) += Aa*R.at(1)*dt;
+	a.v.at(2) += Aa*R.at(2)*dt;
+	
+	b.v.at(0) += -Aa*R.at(0)*dt;
+	b.v.at(1) += -Aa*R.at(1)*dt;
+	b.v.at(2) += -Aa*R.at(2)*dt;
+	std::cout<< a.v.at(0) << "\n"; 
 }
