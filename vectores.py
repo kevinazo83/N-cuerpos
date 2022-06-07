@@ -11,19 +11,7 @@ class Vector:
         self.x = x
         self.y = y
         self.z = z
-    def __repr__(self):
-        return f"Vector({self.x}, {self.y}, {self.z})" #retorna dos formas distintas de representar el vector
-    def __str__(self):
-        return f"{self.x}i + {self.y}j + {self.z}k"
-    def __getitem__(self, item): #volver indexeable el vector
-        if item == 0:
-            return self.x
-        elif item == 1:
-            return self.y
-        elif item == 2:
-            return self.z
-        else:
-            raise IndexError("solo hay 3 elementos en el vector")
+    
     def __add__(self, other): #suma de vcetores
         return Vector(
             self.x + other.x,
