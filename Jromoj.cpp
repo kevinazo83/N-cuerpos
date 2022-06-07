@@ -46,7 +46,7 @@ int main(){
 
 	double Msol = 0.45*pow(10,10);
 	double Mc1 = 0.45*pow(10,5);
-	double dis = 10;
+	double dis = 30;
 	
 	Sol.init(Msol,0,0,0,0,0,0);
 	c1.init(Mc1,dis,0,0,0,0,0);
@@ -85,8 +85,8 @@ void NewV(cuerpo a, cuerpo b){
 	a.v.at(1) += Aa*R.at(1)*dt;
 	a.v.at(2) += Aa*R.at(2)*dt;
 	
-	b.v.at(0) += -Aa*R.at(0)*dt;
-	b.v.at(1) += -Aa*R.at(1)*dt;
-	b.v.at(2) += -Aa*R.at(2)*dt;
-	std::cout<< a.v.at(0) << "\n"; 
+	b.v.at(0) += -Ab*R.at(0)*dt;
+	b.v.at(1) += -Ab*R.at(1)*dt;
+	b.v.at(2) += -Ab*R.at(2)*dt;
+	std::cout<< b.v.at(0) << "\n"; //velocidad del cuerpo menos masivo
 }
