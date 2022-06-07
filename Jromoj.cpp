@@ -1,9 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-//PROBLEMA TSTEP VELOCIDAD NO SE ACTUALIZA
+
 //Variables globales
-double dt = 604800; //Una semana
+double dt = 3600; //1hora
+
 //Clase para cada cuerpo 
 class cuerpo {
 
@@ -15,6 +16,7 @@ class cuerpo {
 		void init(double m0, double x0, double y0, double z0, double vx0, double vy0, double vz0);
 		//Ver que los datos estén bien
 		void print();
+
 };
 
 void cuerpo::init(double m0, double x0, double y0, double z0, double vx0, double vy0, double vz0){
@@ -34,8 +36,10 @@ void cuerpo::print(){
 //Operaciones con cuerpos
 
 	//Calcula la nueva velocidad de los 2 cuerpos ( a1 = Gm2r/|r|^3 ) ( Vnew = V0 + dt*a1 )
-	void NewV(cuerpo a, cuerpo b);
+	void NewV(cuerpo &a, cuerpo &b);
 
+	//Modifica la posición de los cuerpos ( Xnew = X0 + dt*Vx )
+	void Tstep(cuerpo &a);
 	
 int main(){
 
@@ -43,23 +47,50 @@ int main(){
 	
 	cuerpo Sol;
 	cuerpo c1;
+	cuerpo c2;
 
-	double Msol = 0.45*pow(10,10);
-	double Mc1 = 0.45*pow(10,5);
-	double dis = 30;
+	double Msol = 1.989*pow(10,30);
+
+	//Tierra
+	double Mt = 5.972*pow(10,24);
+	double Vt = 29780;
+	double Xt = 150*pow(10,9);
+
+	//Marte
+	double Mm = 6.39*pow(10,23);
+	double Vm = -24130;
+	double Xm = -228*pow(10,9);
 	
 	Sol.init(Msol,0,0,0,0,0,0);
-	c1.init(Mc1,dis,0,0,0,0,0);
+	c1.init(Mt,Xt,0,0,0,Vt,0);
+	c2.init(Mm,Xm,0,0,0,Vm,0);
+	
 	Sistema.push_back(Sol);
 	Sistema.push_back(c1);
+	Sistema.push_back(c2);
 
-	NewV(Sistema.at(0),Sistema.at(1));
 	
+	for (int i = 1; i <= 9000; i++){
+
+		Sistema.at(0).print();
+		
+		//Interaciones entre los cuerpos (Arreglar al agregar marte)
+		NewV(Sistema.at(0),Sistema.at(1));
+		//NewV(Sistema.at(0),Sistema.at(2));
+		//NewV(Sistema.at(1),Sistema.at(2));
+
+		//Actualizar cuerpos
+		Tstep(Sistema.at(0));
+		Tstep(Sistema.at(1));
+		//Tstep(Sistema.at(2));
+
+	}
+	Sistema.at(0).print();
 	return 0;
 }
 
 
-void NewV(cuerpo a, cuerpo b){
+void NewV(cuerpo &a, cuerpo &b){
 
 	std::vector<double> R{0,0,0};
 	double r = 0;
@@ -71,7 +102,7 @@ void NewV(cuerpo a, cuerpo b){
 		r += pow(R.at(i),2);
 	}
 	r = sqrt(r);
-	
+
 	double r3 = pow(r,3);
 	double G = 6.6738*pow(10,-11);
 
@@ -88,5 +119,14 @@ void NewV(cuerpo a, cuerpo b){
 	b.v.at(0) += -Ab*R.at(0)*dt;
 	b.v.at(1) += -Ab*R.at(1)*dt;
 	b.v.at(2) += -Ab*R.at(2)*dt;
-	std::cout<< b.v.at(0) << "\n"; //velocidad del cuerpo menos masivo
+ 	
+}
+
+void Tstep(cuerpo &a){
+
+	//Actualizamos la posición del cuerpo
+	a.x.at(0) += a.v.at(0)*dt;
+	a.x.at(1) += a.v.at(1)*dt;
+	a.x.at(2) += a.v.at(2)*dt;
+
 }
