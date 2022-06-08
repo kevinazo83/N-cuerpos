@@ -2,8 +2,15 @@
 #include <vector>
 #include <cmath>
 
+/*
+actualmente solo se imprime la posición del cuerpo seleccionado (Lineas 138 y 156). Sistema(0) es el sol y los siguientes dependen del orden en el que agregamos los cuerpos.
+*/
+
+// Unidades:
+// Masa = Masa terrestre, Distancia = U.astronómica, tiempo = mes.
+
 //Variables globales
-double dt = 3600; //1hora
+double dt = 0.5; // medio mes
 
 //Clase para cada cuerpo 
 class cuerpo {
@@ -14,7 +21,7 @@ class cuerpo {
 
 		//Inicializar el cuerpo
 		void init(double m0, double x0, double y0, double z0, double vx0, double vy0, double vz0);
-		//Ver que los datos estén bien
+		//Imprime la posición del cuerpo
 		void print();
 
 };
@@ -35,55 +42,116 @@ void cuerpo::print(){
 
 //Operaciones con cuerpos
 
-	//Calcula la nueva velocidad de los 2 cuerpos ( a1 = Gm2r/|r|^3 ) ( Vnew = V0 + dt*a1 )
+	//Calcula la aceleración de dos cuerpos al intractuar gravitacionalmente y actualiza sus velocidades ( a1 = Gm2r/|r|^3 ) ( Vnew = V0 + dt*a1 )
 	void NewV(cuerpo &a, cuerpo &b);
 
-	//Modifica la posición de los cuerpos ( Xnew = X0 + dt*Vx )
+	//Actualiza la posición de un cuerpo ( Xnew = X0 + dt*Vx )
 	void Tstep(cuerpo &a);
 	
 int main(){
 
+	//En este vector almacenamos todos los cuerpos del sistema
 	std::vector<cuerpo>Sistema;
-	
+
+	//Cuerpos del sistema solar
 	cuerpo Sol;
-	cuerpo c1;
-	cuerpo c2;
+	cuerpo Mer;
+	cuerpo Ven;
+	cuerpo Tie;
+	cuerpo Mar;
+	cuerpo Jup;
+	cuerpo Sat;
+	cuerpo Ura;
+	cuerpo Nep;
 
-	double Msol = 1.989*pow(10,30);
+	double M = 0;
+	double V = 0;
+	double X = 0;
 
+	//Inicialización de los cuerpos
+	
+	//Sol
+	M = 332946;
+	V = 0;
+	X = 0;
+	Sol.init(M,X,0,0,0,V,0);
+
+	//Mercurio
+	M = 0.055;
+	V = 0;
+	X = 0.39;
+	Mer.init(M,X,0,0,0,V,0);
+	
+	//Venus
+	M = 0.815;
+	V = 0.608289;
+	X = -0.72;
+	Ven.init(M,X,0,0,0,V,0);
+	
 	//Tierra
-	double Mt = 5.972*pow(10,24);
-	double Vt = 29780;
-	double Xt = 150*pow(10,9);
-
+	M = 1;
+	V = 0.5179144;
+	X = 1;
+	Tie.init(M,X,0,0,0,V,0);
+	
 	//Marte
-	double Mm = 6.39*pow(10,23);
-	double Vm = -24130;
-	double Xm = -228*pow(10,9);
+	M = 0.107;
+	V = -0.419; //0.41845
+	X = -1.52;
+	Mar.init(M,X,0,0,0,V,0);
 	
-	Sol.init(Msol,0,0,0,0,0,0);
-	c1.init(Mt,Xt,0,0,0,Vt,0);
-	c2.init(Mm,Xm,0,0,0,Vm,0);
-	
+	//Jupiter
+	M = 317.8;
+	V = 0.22715;
+	X = 5.2;
+	Jup.init(M,X,0,0,0,V,0);
+
+	//Saturno
+	M = 95.16;
+	V = 0;
+	X = 9.54;
+	Sat.init(M,X,0,0,0,V,0);
+
+	//Urano
+	M = 14.54;
+	V = 0;
+	X = 19.19;
+	Ura.init(M,X,0,0,0,V,0);
+
+	//Neptuno
+	M = 17.15;
+	V = 0;
+	X = 30.06;
+	Nep.init(M,X,0,0,0,V,0);
+
+	//Agregamos los cuerpos que vamos a modelar
 	Sistema.push_back(Sol);
-	Sistema.push_back(c1);
-	Sistema.push_back(c2);
+	Sistema.push_back(Ven);
+	Sistema.push_back(Tie);
+	Sistema.push_back(Mar);
+	Sistema.push_back(Jup);
 
-	
-	for (int i = 1; i <= 9000; i++){
 
+	//Ciclo para 400 pasos de tiempo
+	for (int i = 1; i <= 400; i++){
+		
 		Sistema.at(0).print();
 		
-		//Interaciones entre los cuerpos (Arreglar al agregar marte)
-		NewV(Sistema.at(0),Sistema.at(1));
-		//NewV(Sistema.at(0),Sistema.at(2));
-		//NewV(Sistema.at(1),Sistema.at(2));
+		//Interacion entre todos los cuerpos del sistema
+		for (int j = 0; j < Sistema.size()-1; j++){
+			for (int k = j+1; k < Sistema.size(); k++){
 
-		//Actualizar cuerpos
-		Tstep(Sistema.at(0));
-		Tstep(Sistema.at(1));
-		//Tstep(Sistema.at(2));
+				NewV(Sistema.at(j),Sistema.at(k));
+				
+			}
+		}
 
+		//Actualiza los cuerpos
+		for (int j = 0; j < Sistema.size(); j++){
+
+			Tstep(Sistema.at(j));
+				
+		}
 	}
 	Sistema.at(0).print();
 	return 0;
@@ -104,13 +172,14 @@ void NewV(cuerpo &a, cuerpo &b){
 	r = sqrt(r);
 
 	double r3 = pow(r,3);
-	double G = 6.6738*pow(10,-11);
+	double G = 80.486*pow(10,-8);
 
+	// Aceleraciones de los cuerpos
 	// F = -Gm1m2/|r|^3 * r y F = ma
 	double Aa = -G*b.m/r3;
 	double Ab = -G*a.m/r3;
 
-	//Actualizamos la velocidad de los cuerpos v = a*dt
+	//Actualizamos la velocidad de los cuerpos v = v0 + a*dt
 
 	a.v.at(0) += Aa*R.at(0)*dt;
 	a.v.at(1) += Aa*R.at(1)*dt;
@@ -124,7 +193,7 @@ void NewV(cuerpo &a, cuerpo &b){
 
 void Tstep(cuerpo &a){
 
-	//Actualizamos la posición del cuerpo
+	//Actualizamos la posición del cuerpo x = x0 + v*dt
 	a.x.at(0) += a.v.at(0)*dt;
 	a.x.at(1) += a.v.at(1)*dt;
 	a.x.at(2) += a.v.at(2)*dt;
