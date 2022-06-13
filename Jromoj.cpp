@@ -6,7 +6,7 @@
 // Masa = Masa terrestre, Distancia = U.astronómica, tiempo = mes.
 
 //Variables globales
-double N = 10000 // Numero de pasos
+double N = 10000; // Numero de pasos
 double dt = 0.1; // Tres Dias (Mercurio no presenta problemas)
 // Si tomamos dt = 0.5 (Medio mes), mercurio no matiene su orbita.
 // Si tomamos dt = 0.15 (Cuatro dias y medio), la orbita de mercurio choca con la de venus.
