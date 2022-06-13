@@ -2,15 +2,14 @@
 #include <vector>
 #include <cmath>
 
-/*
-actualmente solo se imprime la posición del cuerpo seleccionado (Lineas 138 y 156). Sistema(0) es el sol y los siguientes dependen del orden en el que agregamos los cuerpos.
-*/
-
 // Unidades:
 // Masa = Masa terrestre, Distancia = U.astronómica, tiempo = mes.
 
 //Variables globales
-double dt = 0.5; // medio mes
+double N = 10000 // Numero de pasos
+double dt = 0.1; // Tres Dias (Mercurio no presenta problemas)
+// Si tomamos dt = 0.5 (Medio mes), mercurio no matiene su orbita.
+// Si tomamos dt = 0.15 (Cuatro dias y medio), la orbita de mercurio choca con la de venus.
 
 //Clase para cada cuerpo 
 class cuerpo {
@@ -71,71 +70,73 @@ int main(){
 	//Inicialización de los cuerpos
 	
 	//Sol
-	M = 332946;
+	M = 332959;
 	V = 0;
 	X = 0;
 	Sol.init(M,X,0,0,0,V,0);
 
 	//Mercurio
-	M = 0.055;
-	V = 0;
-	X = 0.39;
+	M = 0.0553;
+	V = 1.036156924;
+	X = 0.3074916;
 	Mer.init(M,X,0,0,0,V,0);
 	
 	//Venus
 	M = 0.815;
-	V = 0.608289;
-	X = -0.72;
+	V = -0.6152291537;
+	X = -0.6194454586;
 	Ven.init(M,X,0,0,0,V,0);
 	
 	//Tierra
 	M = 1;
-	V = 0.5179144;
-	X = 1;
+	V = 0.5321328117;
+	X = 0.983271237;
 	Tie.init(M,X,0,0,0,V,0);
 	
 	//Marte
-	M = 0.107;
-	V = -0.419; //0.41845
-	X = -1.52;
+	M = 0.1074;
+	V = -0.4655503305;
+	X = -1.38137259;
 	Mar.init(M,X,0,0,0,V,0);
 	
 	//Jupiter
-	M = 317.8;
-	V = 0.22715;
-	X = 5.2;
+	M = 317.833;
+	V = 0.2410320956;
+	X = 4.950581337;
 	Jup.init(M,X,0,0,0,V,0);
 
 	//Saturno
-	M = 95.16;
-	V = 0;
-	X = 9.54;
+	M = 95.152;
+	V = -0.1788415987;
+	X = -9.074705468;
 	Sat.init(M,X,0,0,0,V,0);
 
 	//Urano
-	M = 14.54;
-	V = 0;
-	X = 19.19;
+	M = 14.536;
+	V = 0.1249080321;
+	X = 18.26697968;
 	Ura.init(M,X,0,0,0,V,0);
 
 	//Neptuno
-	M = 17.15;
-	V = 0;
-	X = 30.06;
+	M = 17.147;
+	V = -0.0966236535;
+	X = -29.88718083;
 	Nep.init(M,X,0,0,0,V,0);
 
 	//Agregamos los cuerpos que vamos a modelar
 	Sistema.push_back(Sol);
+	Sistema.push_back(Mer);
 	Sistema.push_back(Ven);
 	Sistema.push_back(Tie);
 	Sistema.push_back(Mar);
 	Sistema.push_back(Jup);
+	Sistema.push_back(Sat);
+	Sistema.push_back(Ura);
+	Sistema.push_back(Nep);
 
 
-	//Ciclo para 400 pasos de tiempo
-	for (int i = 1; i <= 400; i++){
-		
-		Sistema.at(0).print();
+	//Ciclo para N-1 pasos de tiempo (imprime N valores para cada cuerpo)
+	for (int i = 1; i <= N; i++){
 		
 		//Interacion entre todos los cuerpos del sistema
 		for (int j = 0; j < Sistema.size()-1; j++){
@@ -146,14 +147,15 @@ int main(){
 			}
 		}
 
-		//Actualiza los cuerpos
+		//Imprime y actualiza los cuerpos
 		for (int j = 0; j < Sistema.size(); j++){
 
+			Sistema.at(j).print();
 			Tstep(Sistema.at(j));
 				
 		}
 	}
-	Sistema.at(0).print();
+	
 	return 0;
 }
 
