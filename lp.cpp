@@ -16,7 +16,7 @@ class cuerpo {
 
 	public:
 		double m;
-		std::vector<double> x{0,0,0}, v{0,0,0},F{0,0,0}, A{0,0,0};
+		std::vector<double> x{0,0,0}, v{0,0,0},F{0,0,0}, A{0,0,0};  //se agregaron los vectores fuerza y aceleracion,
 
 		//Inicializar el cuerpo
 		void init(double m0, double x0, double y0, double z0, double vx0, double vy0, double vz0,double Fx0, double Fy0, double Fz0 ,double Ax0, double Ay0, double Az0 );
@@ -43,16 +43,17 @@ void cuerpo::init(double m0, double x0, double y0, double z0, double vx0, double
 }
 
 void cuerpo::print(){
-	std::cout<< x.at(0) << "\t\t" << x.at(1) << "\t\t" << x.at(2)<< "\t\t" <<F.at(0) << "\t\t" << F.at(1) << "\t\t" << F.at(2) <<"\n";
+	std::cout<< x.at(0) << "\t\t" << x.at(1) << "\t\t" << x.at(2)<<"\n";
 }
 
 //Operaciones con cuerpos
+//Calcula la fuerza de dos cuerpos al intractuar gravitacionalmente y actualiza sus velocidades ( a1 = Gm2r/|r|^3 )
     void NewF(cuerpo&a, cuerpo&b);
 
-	//Calcula la aceleración de dos cuerpos al intractuar gravitacionalmente y actualiza sus velocidades ( a1 = Gm2r/|r|^3 ) ( Vnew = V0 + dt*a1 )
+	//Hace la fuerza neta sobre un cuerpo igual a cero antes de empezar una iteracion
 	void limpF(cuerpo &a);
 
-	//Actualiza la posición de un cuerpo ( Xnew = X0 + dt*Vx )
+	//Actualiza la posición de un cuerpo
     void Tstep(cuerpo &a);
 
     void Vstep(cuerpo &a);
@@ -171,22 +172,19 @@ int main(){
              Vstep(Sistema.at(j));
 
 
-
-
-
 		}
 	}
 
 	return 0;
 }
-void limpF(cuerpo&a){
+void limpF(cuerpo&a){  //funcion para hacer la fuerza total sobre un cuerpo igual a cero, al iniciar una nueva iteracion
 
 	a.F.at(0) =0 ;
 	a.F.at(1) =0;
 	a.F.at(2) =0;
 }
 
-void NewF(cuerpo &a, cuerpo &b){
+void NewF(cuerpo &a, cuerpo &b){       //calcula la fuerza que ejerce el cuerpo b sobre el cuerpo a, Jack calculaba la aceleración, lo cambie para poder implementar mejor lp
 
 	std::vector<double> R{0,0,0};
 	double r = 0;
@@ -219,7 +217,7 @@ void NewF(cuerpo &a, cuerpo &b){
 
 
 
-void Vstep(cuerpo &a){
+void Vstep(cuerpo &a){   //algoritmo lp para la aceleracion y velocidad
 
     std::vector<double> An{0,0,0};
     An.at(0) = a.F.at(0)/a.m;
@@ -235,8 +233,8 @@ void Vstep(cuerpo &a){
     a.A.at(2) =  An.at(2);
 
 }
-void Tstep(cuerpo &a){
-	//Actualizamos la posición del cuerpo x = x0 + v*dt
+void Tstep(cuerpo &a){         //algoritmo lp para el siguiente paso en la posicion
+
 	a.x.at(0) += a.v.at(0)*dt+0.5*a.A.at(0)*pow(dt,2);
 	a.x.at(1) += a.v.at(1)*dt+0.5*a.A.at(1)*pow(dt,2);
 	a.x.at(2) += a.v.at(2)*dt+0.5*a.A.at(2)*pow(dt,2);
