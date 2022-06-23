@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cmath>
 
@@ -146,13 +147,16 @@ int main(){
 	Sistema.push_back(Ura);
 	Sistema.push_back(Nep);
 
-
+    std::ofstream outfile;
+    outfile.open("datos.txt");
 	//Ciclo para N-1 pasos de tiempo (imprime N valores para cada cuerpo)
-	for (int i = 1; i <= N; i++){
+	for (int i = 0; i <= N; i++){
 
          for (int j = 0; j < Sistema.size(); j++){
              Tstep(Sistema.at(j));
-             Sistema.at(j).print();
+             //Sistema.at(j).print();
+			 outfile<< Sistema.at(j).x.at(0) << "\t\t" << Sistema.at(j).x.at(1) << "\t\t" << Sistema.at(j).x.at(2)<<"\n";
+
          }
          for (int j = 0; j < Sistema.size(); j++){
              limpF(Sistema.at(j));
@@ -170,11 +174,10 @@ int main(){
 		//Imprime y actualiza los cuerpos
 		 for (int j = 0; j < Sistema.size(); j++){
              Vstep(Sistema.at(j));
-
-
-		}
+		 }
+		 outfile<<std::endl;
 	}
-
+    outfile.close();
 	return 0;
 }
 void limpF(cuerpo&a){  //funcion para hacer la fuerza total sobre un cuerpo igual a cero, al iniciar una nueva iteracion
