@@ -6,7 +6,7 @@ import matplotlib.animation as animation
 import math
 
 D = np.genfromtxt("datos.txt")
-N = 10000 #Numero de datos para cada cuerpo
+N = 11000 #Numero de datos para cada cuerpo
 C = 9 #Numero de cuerpos
 tt = 300 #dts que se grafican
 Ds = np.empty(N*3,dtype=float)
@@ -43,27 +43,42 @@ Dsa = np.reshape(Dsa,(N,3))
 Du = np.reshape(Du,(N,3))
 Dn = np.reshape(Dn,(N,3))
 
-
+size=400
 #print(Dn)
 #print(Ds[2][1])
+min_display_size = 10
+display_log_base = 1.3
 fig=plt.figure()
 ax=fig.add_subplot(111,projection='3d')
+#ax.view_init(0, 0)
+#ax.plot3D(Dt[:][0],Dt[:][1],Dt[:][2],'gray')
 #plt.rcParams['axes.facecolor'] = 'm'
 def actualizar(i):
  ax.clear()
- plt.xlim(min(Dma[:,0]),max(Dma[:,0]))
- plt.ylim(min(Dma[:,1]),max(Dma[:,1]))
+ plt.title('tiempo='+str(int(i*0.1))+'meses')
+ plt.xlim(min(Dsa[:,0]),max(Dsa[:,0]))
+ plt.ylim(min(Dsa[:,1]),max(Dsa[:,1]))
+ ax.plot3D(Dm[:50,0],Dm[:50,1],Dm[:50,2],'gray')
+ ax.plot3D(Dv[:150,0],Dv[:150,1],Dv[:150,2],'gray')
  ax.plot3D(Dt[:150,0],Dt[:150,1],Dt[:150,2],'gray')
+ ax.plot3D(Dma[:250,0],Dma[:250,1],Dma[:250,2],'gray')
+ ax.plot3D(Dj[:1500,0],Dj[:1500,1],Dj[:1500,2],'gray')
+ ax.plot3D(Dsa[:4000,0],Dsa[:4000,1],Dsa[:4000,2],'gray')
+ ax.plot3D(Du[:11000,0],Du[:11000,1],Du[:11000,2],'gray')
+ ax.plot3D(Dn[:11000,0],Dn[:11000,1],Dn[:11000,2],'gray')
 
- ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(-max(Dma[:,0])/2),2),c='#F4D03F')
- ax.scatter(Dm[i][0],Dm[i][1],Dm[i][2],s=max(10*math.exp(-max(Dma[:,0])/2),1),c='#C0392B')
- ax.scatter(Dv[i][0],Dv[i][1],Dv[i][2],s=max(28*math.exp(-max(Dma[:,0])/2),1), c='#C0392B')
- ax.scatter(Dt[i][0],Dt[i][1],Dt[i][2],s=max(32*math.exp(-max(Dma[:,0])/2),1),c='#3498DB')
- ax.scatter(Dma[i][0],Dma[i][1],Dma[i][2],s=max(20*math.exp(-max(Dma[:,0])/2),1),c='#B03A2E')
- ax.scatter(Dj[i][0],Dj[i][1],Dj[i][2],s=max(217*math.exp(-max(Dma[:,0])/2),1),c='#F5CBA7')
- ax.scatter(Dsa[i][0],Dsa[i][1],Dsa[i][2],s=max(155*math.exp(-max(Dma[:,0])/2),1))
- ax.scatter(Du[i][0],Du[i][1],Du[i][2],s=max(55*math.exp(-max(Dma[:,0])/2),1))
- ax.scatter(Dn[i][0],Dn[i][1],Dn[i][2],s=max(48*math.exp(-max(Dma[:,0])/2),1))
+ ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(-max(Dsa[:,0])/2),2),c='#F4D03F')
 
-ani=animation.FuncAnimation(fig,actualizar,range(N),interval=0.00000000001,repeat=True)
+
+
+ ax.scatter(Dm[i][0],Dm[i][1],Dm[i][2],s=max(10*math.exp(-max(Dsa[:,0])/2),1),c='#C0392B')
+ ax.scatter(Dv[i][0],Dv[i][1],Dv[i][2],s=max(28*math.exp(-max(Dsa[:,0])/2),1),c='#3498DB')
+ ax.scatter(Dt[i][0],Dt[i][1],Dt[i][2],s=max(32*math.exp(-max(Dsa[:,0])/2),1),c='#3498DB')
+ ax.scatter(Dma[i][0],Dma[i][1],Dma[i][2],s=max(20*math.exp(-max(Dsa[:,0])/2),1),c='#B03A2E')
+ ax.scatter(Dj[i][0],Dj[i][1],Dj[i][2],s=max(217*math.exp(-max(Dsa[:,0])/2),1),c='#F5CBA7')
+ ax.scatter(Dsa[i][0],Dsa[i][1],Dsa[i][2],s=max(155*math.exp(-max(Dsa[:,0])/2),1))
+ ax.scatter(Du[i][0],Du[i][1],Du[i][2],s=max(55*math.exp(-max(Dsa[:,0])/2),1))
+ ax.scatter(Dn[i][0],Dn[i][1],Dn[i][2],s=max(48*math.exp(-max(Dsa[:,0])/2),1))
+
+ani=animation.FuncAnimation(fig,actualizar,range(N),interval=0.0000001,repeat=True)
 plt.show()
