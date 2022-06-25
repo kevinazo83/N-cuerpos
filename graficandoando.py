@@ -3,6 +3,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.animation as animation
+import math
 
 D = np.genfromtxt("datos.txt")
 N = 10000 #Numero de datos para cada cuerpo
@@ -47,19 +48,22 @@ Dn = np.reshape(Dn,(N,3))
 #print(Ds[2][1])
 fig=plt.figure()
 ax=fig.add_subplot(111,projection='3d')
-plt.rcParams['axes.facecolor'] = 'm'
+#plt.rcParams['axes.facecolor'] = 'm'
 def actualizar(i):
  ax.clear()
- ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=800,c='#F4D03F')
- ax.scatter(Dm[i][0],Dm[i][1],Dm[i][2],s=5,c='#C0392B')
- ax.scatter(Dv[i][0],Dv[i][1],Dv[i][2],s=5, c='#717D7E')
- ax.scatter(Dt[i][0],Dt[i][1],Dt[i][2],s=10,c='#3498DB')
- ax.scatter(Dma[i][0],Dma[i][1],Dma[i][2],s=7,c='#B03A2E')
- ax.scatter(Dj[i][0],Dj[i][1],Dj[i][2],s=117,c='#F5CBA7')
- ax.scatter(Dsa[i][0],Dsa[i][1],Dsa[i][2],s=55)
- ax.scatter(Du[i][0],Du[i][1],Du[i][2],s=6)
- ax.scatter(Dn[i][0],Dn[i][1],Dn[i][2],s=6)
  plt.xlim(min(Dma[:,0]),max(Dma[:,0]))
  plt.ylim(min(Dma[:,1]),max(Dma[:,1]))
-ani=animation.FuncAnimation(fig,actualizar,range(N),interval=0.0001,repeat=True)
+ ax.plot3D(Dt[:150,0],Dt[:150,1],Dt[:150,2],'gray')
+
+ ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(-max(Dma[:,0])/2),2),c='#F4D03F')
+ ax.scatter(Dm[i][0],Dm[i][1],Dm[i][2],s=max(10*math.exp(-max(Dma[:,0])/2),1),c='#C0392B')
+ ax.scatter(Dv[i][0],Dv[i][1],Dv[i][2],s=max(28*math.exp(-max(Dma[:,0])/2),1), c='#C0392B')
+ ax.scatter(Dt[i][0],Dt[i][1],Dt[i][2],s=max(32*math.exp(-max(Dma[:,0])/2),1),c='#3498DB')
+ ax.scatter(Dma[i][0],Dma[i][1],Dma[i][2],s=max(20*math.exp(-max(Dma[:,0])/2),1),c='#B03A2E')
+ ax.scatter(Dj[i][0],Dj[i][1],Dj[i][2],s=max(217*math.exp(-max(Dma[:,0])/2),1),c='#F5CBA7')
+ ax.scatter(Dsa[i][0],Dsa[i][1],Dsa[i][2],s=max(155*math.exp(-max(Dma[:,0])/2),1))
+ ax.scatter(Du[i][0],Du[i][1],Du[i][2],s=max(55*math.exp(-max(Dma[:,0])/2),1))
+ ax.scatter(Dn[i][0],Dn[i][1],Dn[i][2],s=max(48*math.exp(-max(Dma[:,0])/2),1))
+
+ani=animation.FuncAnimation(fig,actualizar,range(N),interval=0.00000000001,repeat=True)
 plt.show()
