@@ -6,9 +6,20 @@ import matplotlib.animation as animation
 import math
 
 D = np.genfromtxt("datos.txt")
-N = 11000 #Numero de datos para cada cuerpo
+N = 22000 #Numero de datos para cada cuerpo
 C = 9 #Numero de cuerpos
 tt = 300 #dts que se grafican
+#DD=np.ones(9)
+#for k in range(9):
+  #  DD[k]=np.empty(N*3,dtype=float)
+
+   # for i in range(N):
+#	for j in range(3):
+###		DD[3*i+j] = D[i*C+k,j]
+#for k in range(9):
+ #       DD[k]=np.reshape(DD[k],(N,3))
+
+
 Ds = np.empty(N*3,dtype=float)
 Dm = np.empty(N*3,dtype=float)
 Dv = np.empty(N*3,dtype=float)
@@ -58,6 +69,14 @@ def actualizar(i):
  plt.title('tiempo='+str(int(i*0.1))+'meses')
  plt.xlim(min(Dsa[:,0]),max(Dsa[:,0]))
  plt.ylim(min(Dsa[:,1]),max(Dsa[:,1]))
+
+ #for i in range(9):
+        #ax.plot3D(DD[i][:50,0],DD[i][:50,1],DD[i][:50,2],'gray')
+        #ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(-max(Dma[:,0])/2),2),c='#F4D03F')
+
+
+ ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(-max(Dsa[:,0])/2),2),c='#F4D03F')
+
  ax.plot3D(Dm[:50,0],Dm[:50,1],Dm[:50,2],'gray')
  ax.plot3D(Dv[:150,0],Dv[:150,1],Dv[:150,2],'gray')
  ax.plot3D(Dt[:150,0],Dt[:150,1],Dt[:150,2],'gray')
@@ -65,11 +84,7 @@ def actualizar(i):
  ax.plot3D(Dj[:1500,0],Dj[:1500,1],Dj[:1500,2],'gray')
  ax.plot3D(Dsa[:4000,0],Dsa[:4000,1],Dsa[:4000,2],'gray')
  ax.plot3D(Du[:11000,0],Du[:11000,1],Du[:11000,2],'gray')
- ax.plot3D(Dn[:11000,0],Dn[:11000,1],Dn[:11000,2],'gray')
-
- ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(-max(Dsa[:,0])/2),2),c='#F4D03F')
-
-
+ ax.plot3D(Dn[:22000,0],Dn[:22000,1],Dn[:22000,2],'gray')
 
  ax.scatter(Dm[i][0],Dm[i][1],Dm[i][2],s=max(10*math.exp(-max(Dsa[:,0])/2),1),c='#C0392B')
  ax.scatter(Dv[i][0],Dv[i][1],Dv[i][2],s=max(28*math.exp(-max(Dsa[:,0])/2),1),c='#3498DB')
@@ -79,6 +94,9 @@ def actualizar(i):
  ax.scatter(Dsa[i][0],Dsa[i][1],Dsa[i][2],s=max(155*math.exp(-max(Dsa[:,0])/2),1))
  ax.scatter(Du[i][0],Du[i][1],Du[i][2],s=max(55*math.exp(-max(Dsa[:,0])/2),1))
  ax.scatter(Dn[i][0],Dn[i][1],Dn[i][2],s=max(48*math.exp(-max(Dsa[:,0])/2),1))
+
+
+
 
 ani=animation.FuncAnimation(fig,actualizar,range(N),interval=0.0000001,repeat=True)
 plt.show()
