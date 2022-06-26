@@ -1,13 +1,18 @@
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <string>
+#include<stdlib.h>
+//#include<conio.h>
+
 
 // Unidades:
 // Masa = Masa terrestre, Distancia = U.astronómica, tiempo = mes.
 
 //Variables globales
-double N = 10000; // Numero de pasos
+double N = 30000; // Numero de pasos
 double dt = 0.1; // Tres Dias (Mercurio no presenta problemas)
 // Si tomamos dt = 0.5 (Medio mes), mercurio no matiene su orbita.
 // Si tomamos dt = 0.15 (Cuatro dias y medio), la orbita de mercurio choca con la de venus.
@@ -63,6 +68,8 @@ int main(){
 
 	//En este vector almacenamos todos los cuerpos del sistema
 	std::vector<cuerpo>Sistema;
+    std::vector<float>vNotas;
+
 
 	//Cuerpos del sistema solar
 	cuerpo Sol;
@@ -74,83 +81,46 @@ int main(){
 	cuerpo Sat;
 	cuerpo Ura;
 	cuerpo Nep;
+    float cal = 0;
 
-	double M = 0;
-	double V = 0;
-	double X = 0;
+    std::ifstream fNotas ("entrada.txt"); //Apertura del archivo en modo lectura
+    if(fNotas.is_open()){
 
 
-	//Inicialización de los cuerpos
+         while (fNotas >> cal){
+                vNotas.push_back(cal);
+         }
+    float l=vNotas[vNotas.size()-1];
+    std::vector<std::vector<float>>ordenando(l);
+    std::vector<std::vector<cuerpo>>ordenando1(l);
+    for (int k = 0; k < l; k++){
+        for (int m=0; m < 13;m++){
+            ordenando[k].push_back(vNotas[(k*13)+m]);
 
-	//Soldouble vx0, double vy0, double vz0
-	M = 332959;
-	V = 0;
-	X = 0;
-	Sol.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
+        }
+    }
+    cuerpo C;
+    for (int k = 0; k < l; k++){
+           //cuerpo ordenando1[k].init=ordenando[k];
+        //for (int m=0; m < 13;m++){
+            C.init(ordenando[k][0],ordenando[k][1],ordenando[k][2],ordenando[k][3],ordenando[k][4],ordenando[k][5],ordenando[k][6],ordenando[k][7],ordenando[k][8],ordenando[k][9],ordenando[k][10],ordenando[k][11],ordenando[k][12]);
+            Sistema.push_back(C);
+        }
+        //std::cout <<"\n";
+        //std::cout<<std::endl;
+    }
+    //std::cout<<std::endl;
 
-	//Mercurio
-	M = 0.0553;
-	V = 1.036156924;
-	X = 0.3074916;
-	Mer.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
+    
+    fNotas.close();
 
-	//Venus
-	M = 0.815;
-	V = -0.6152291537;
-	X = -0.6194454586;
-	Ven.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
 
-	//Tierra
-	M = 1;
-	V = 0.5321328117;
-	X = 0.975949724;
-	Tie.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
 
-	//Marte
-	M = 0.1074;
-	V = -0.4655503305;
-	X = -1.38137259;
-	Mar.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
-
-	//Jupiter
-	M = 317.833;
-	V = 0.2410320956;
-	X = 4.950581337;
-	Jup.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
-
-	//Saturno
-	M = 95.152;
-	V = -0.1788415987;
-	X = -9.074705468;
-	Sat.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
-
-	//Urano
-	M = 14.536;
-	V = 0.1249080321;
-	X = 18.26697968;
-	Ura.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
-
-	//Neptuno
-	M = 17.147;
-	V = -0.0966236535;
-	X = -29.88718083;
-	Nep.init(M,X,0,0,0,V,0,0,0,0,0,0,0);
-
-	//Agregamos los cuerpos que vamos a modelar
-	Sistema.push_back(Sol);
-	Sistema.push_back(Mer);
-	Sistema.push_back(Ven);
-	Sistema.push_back(Tie);
-	Sistema.push_back(Mar);
-	Sistema.push_back(Jup);
-	Sistema.push_back(Sat);
-	Sistema.push_back(Ura);
-	Sistema.push_back(Nep);
 
     std::ofstream outfile;
     outfile.open("datos.txt");
 	//Ciclo para N-1 pasos de tiempo (imprime N valores para cada cuerpo)
-	for (int i = 0; i <= N; i++){
+	for (int i = 0; i < N; i++){
 
          for (int j = 0; j < Sistema.size(); j++){
              Tstep(Sistema.at(j));
@@ -163,7 +133,7 @@ int main(){
              //Sistema.at(j).print();
          }
 		//Interacion entre todos los cuerpos del sistema
-		 for (int j = 0; j < Sistema.size()-1; j++){
+		 for (int j = 0; j < Sistema.size(); j++){
              for (int k = 0; k < Sistema.size()-1; k++){
                  if (j!=k){
                      	NewF(Sistema.at(j),Sistema.at(k));
