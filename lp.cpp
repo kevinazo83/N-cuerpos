@@ -4,34 +4,44 @@
 #include <vector>
 #include <cmath>
 #include <string>
-#include<stdlib.h>
+#include <stdlib.h>
 //#include<conio.h>
 
 
 // Unidades:
 // Masa = Masa terrestre, Distancia = U.astronómica, tiempo = mes.
 
-//Variables globales
-double N = 30000; // Numero de pasos
-double dt = 0.1; // Tres Dias (Mercurio no presenta problemas)
+// Variables globales
+
+	double N = 3000; // Numero de pasos que se imprimen para cada planeta
+	double dt = 0.01; // ª
+	int cont = 0; // Contador para ver en que iteración se está
+	int imp = 100; // Cada cuantos dt se imprimen datos
+
+		//Nota: hice más pequeño dt para ver si mercurio mejoraba y se redujo el # de datos al imprimir cada 100 pasos. El tiempo total transcurrido es el mismo que antes.
+
 // Si tomamos dt = 0.5 (Medio mes), mercurio no matiene su orbita.
 // Si tomamos dt = 0.15 (Cuatro dias y medio), la orbita de mercurio choca con la de venus.
 
-//Clase para cada cuerpo
+// Clase para cada cuerpo
 class cuerpo {
 
 	public:
-		double m;
-		std::vector<double> x{0,0,0}, v{0,0,0},F{0,0,0}, A{0,0,0};  //se agregaron los vectores fuerza y aceleracion,
 
-		//Inicializar el cuerpo
+		// Cada cuerpo tiene masa, posición, velocidad, aceleración y fuerza.
+		double m;
+		std::vector<double> x{0,0,0}, v{0,0,0}, A{0,0,0}, F{0,0,0};
+
+		// Función para inicializar el cuerpo
 		void init(double m0, double x0, double y0, double z0, double vx0, double vy0, double vz0,double Fx0, double Fy0, double Fz0 ,double Ax0, double Ay0, double Az0 );
-		//Imprime la posición del cuerpo
+			
+		// Función para imprimir la posición del cuerpo (Creo que se puede eliminar al usar outfile)
 		void print();
 
 };
 
 void cuerpo::init(double m0, double x0, double y0, double z0, double vx0, double vy0, double vz0,double Fx0, double Fy0, double Fz0,double Ax0, double Ay0, double Az0){
+	
 	m = m0;
 	x.at(0) = x0;
 	x.at(1) = y0;
@@ -49,21 +59,27 @@ void cuerpo::init(double m0, double x0, double y0, double z0, double vx0, double
 }
 
 void cuerpo::print(){
+	
 	std::cout<< x.at(0) << "\t\t" << x.at(1) << "\t\t" << x.at(2)<<"\n";
+	
 }
 
-//Operaciones con cuerpos
-//Calcula la fuerza de dos cuerpos al intractuar gravitacionalmente y actualiza sus velocidades ( a1 = Gm2r/|r|^3 )
+// Operaciones con cuerpos
+
+	// Calcula la fuerza que ejerce b sobre a y actualiza la fuerza sobre a
     void NewF(cuerpo&a, cuerpo&b);
 
-	//Hace la fuerza neta sobre un cuerpo igual a cero antes de empezar una iteracion
+	// Hace igual a cero la fuerza neta sobre un cuerpo antes de empezar una iteracion
 	void limpF(cuerpo &a);
 
-	//Actualiza la posición de un cuerpo
-    void Tstep(cuerpo &a);
-
+	// Algoritmo lp para la aceleracion y velocidad
     void Vstep(cuerpo &a);
 
+	// Algoritmo lp para el siguiente paso en la posicion
+    void Tstep(cuerpo &a);
+
+
+// Función main
 int main(){
 
 	//En este vector almacenamos todos los cuerpos del sistema
@@ -81,8 +97,9 @@ int main(){
 	cuerpo Sat;
 	cuerpo Ura;
 	cuerpo Nep;
-    float cal = 0;
+    float cal = 0; //nosequesesto
 
+	// Insertar descripción
     std::ifstream fNotas ("entrada.txt"); //Apertura del archivo en modo lectura
     if(fNotas.is_open()){
 
@@ -119,45 +136,58 @@ int main(){
 
     std::ofstream outfile;
     outfile.open("datos.txt");
-	//Ciclo para N-1 pasos de tiempo (imprime N valores para cada cuerpo)
-	for (int i = 0; i < N; i++){
+	
+	// Ciclo para pasos de tiempo (Como se imprime cada 'imp' pasos, se imprime N valores para cada cuerpo)
+	for (int i = 0; i <= N*imp; i++){
 
-         for (int j = 0; j < Sistema.size(); j++){
-             Tstep(Sistema.at(j));
-             //Sistema.at(j).print();
-			 outfile<< Sistema.at(j).x.at(0) << "\t\t" << Sistema.at(j).x.at(1) << "\t\t" << Sistema.at(j).x.at(2)<<"\n";
+        for (int j = 0; j < Sistema.size(); j++){
 
-         }
-         for (int j = 0; j < Sistema.size(); j++){
-             limpF(Sistema.at(j));
-             //Sistema.at(j).print();
-         }
-		//Interacion entre todos los cuerpos del sistema
-		 for (int j = 0; j < Sistema.size(); j++){
-             for (int k = 0; k < Sistema.size()-1; k++){
-                 if (j!=k){
-                     	NewF(Sistema.at(j),Sistema.at(k));
-                 }
+			// Inicializa?
+            Tstep(Sistema.at(j));
+
+			// Imprime valores cada 'imp' pasos
+			if (cont%imp == 0){
+				outfile<< Sistema.at(j).x.at(0) << "\t\t" << Sistema.at(j).x.at(1) << "\t\t" << Sistema.at(j).x.at(2)<<"\n";
+			}
+        }
+
+		// Limpia las fuerzas para calcularlas en este tiempo
+        for (int j = 0; j < Sistema.size(); j++){
+            limpF(Sistema.at(j));
+        }
+		
+		// Interacion entre todos los cuerpos del sistema 
+		for (int j = 0; j < Sistema.size(); j++){
+            for (int k = 0; k < Sistema.size(); k++){
+                if (j!=k){
+                    NewF(Sistema.at(j),Sistema.at(k));
+                }
 			}
 		}
 
-		//Imprime y actualiza los cuerpos
-		 for (int j = 0; j < Sistema.size(); j++){
-             Vstep(Sistema.at(j));
-		 }
-		 outfile<<std::endl;
+		// Actualiza aceleración y velocidad de los cuerpos
+		for (int j = 0; j < Sistema.size(); j++){
+            Vstep(Sistema.at(j));
+		}
+		outfile<<std::endl; //nosequehace
+		cont += 1; // Actualiza el contador de pasos
+		
 	}
-    outfile.close();
+    outfile.close();  //nosequehace
 	return 0;
 }
-void limpF(cuerpo&a){  //funcion para hacer la fuerza total sobre un cuerpo igual a cero, al iniciar una nueva iteracion
+
+// Funcion para hacer la fuerza total sobre un cuerpo igual a cero al iniciar una nueva iteracion
+void limpF(cuerpo &a){
 
 	a.F.at(0) =0 ;
 	a.F.at(1) =0;
 	a.F.at(2) =0;
+	
 }
 
-void NewF(cuerpo &a, cuerpo &b){       //calcula la fuerza que ejerce el cuerpo b sobre el cuerpo a, Jack calculaba la aceleración, lo cambie para poder implementar mejor lp
+// Calcula la fuerza que ejerce el cuerpo b sobre el cuerpo a
+void NewF(cuerpo &a, cuerpo &b){
 
 	std::vector<double> R{0,0,0};
 	double r = 0;
@@ -173,24 +203,18 @@ void NewF(cuerpo &a, cuerpo &b){       //calcula la fuerza que ejerce el cuerpo 
 	double r3 = pow(r,3);
 	double G = 80.79*pow(10,-8);
     //double G = 1200;
-	// Aceleraciones de los cuerpos
-	// F = -Gm1m2/|r|^3 * r y F = ma
+	
+	// F = -Gm1m2/|r|^3 * r
 	double Fa = -G*b.m*a.m/r3;
-	double Fb = -G*a.m*b.m/r3;
-
 
 	a.F.at(0) += Fa*R.at(0)*1;
 	a.F.at(1) += Fa*R.at(1)*1;
 	a.F.at(2) += Fa*R.at(2)*1;
-
-
-
+	
 }
 
-
-
-
-void Vstep(cuerpo &a){   //algoritmo lp para la aceleracion y velocidad
+// Algoritmo lp para la aceleracion y velocidad
+void Vstep(cuerpo &a){
 
     std::vector<double> An{0,0,0};
     An.at(0) = a.F.at(0)/a.m;
@@ -206,7 +230,9 @@ void Vstep(cuerpo &a){   //algoritmo lp para la aceleracion y velocidad
     a.A.at(2) =  An.at(2);
 
 }
-void Tstep(cuerpo &a){         //algoritmo lp para el siguiente paso en la posicion
+
+// Algoritmo lp para el siguiente paso en la posicion
+void Tstep(cuerpo &a){
 
 	a.x.at(0) += a.v.at(0)*dt+0.5*a.A.at(0)*pow(dt,2);
 	a.x.at(1) += a.v.at(1)*dt+0.5*a.A.at(1)*pow(dt,2);
