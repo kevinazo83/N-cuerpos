@@ -74,15 +74,7 @@ int main(){
 
 
 	//Cuerpos del sistema solar
-	cuerpo Sol;
-	cuerpo Mer;
-	cuerpo Ven;
-	cuerpo Tie;
-	cuerpo Mar;
-	cuerpo Jup;
-	cuerpo Sat;
-	cuerpo Ura;
-	cuerpo Nep;
+
     float cal = 0;
 
     std::ifstream fNotas ("entrada.txt"); //Apertura del archivo en modo lectura
