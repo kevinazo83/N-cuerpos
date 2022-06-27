@@ -1,11 +1,12 @@
+
 import numpy as np
 import matplotlib.pyplot as plt
 import imageio
 
 D = np.genfromtxt("datos.txt")
-N = 10000 #Numero de datos para cada cuerpo
+N = 20000 #Numero de datos para cada cuerpo
 C = 9 #Numero de cuerpos
-tt = 20 #dts que se grafican
+tt = 20000 #dts que se grafican
 Ds = np.empty(N*3,dtype=float)
 Dm = np.empty(N*3,dtype=float)
 Dv = np.empty(N*3,dtype=float)
@@ -39,9 +40,10 @@ Dj = np.reshape(Dj,(N,3))
 Dsa = np.reshape(Dsa,(N,3))
 Du = np.reshape(Du,(N,3))
 Dn = np.reshape(Dn,(N,3))
+#print(Ds)
 
 fig, ax = plt.subplots(figsize=(20,20))
-ax.plot(Ds[:tt,0],Ds[:tt,1])
+ax.scatter(Ds[:tt,0],Ds[:tt,1])
 ax.plot(Dm[:tt,0],Dm[:tt,1])
 ax.plot(Dv[:tt,0],Dv[:tt,1])
 ax.plot(Dt[:tt,0],Dt[:tt,1])
