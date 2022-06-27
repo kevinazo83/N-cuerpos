@@ -2,6 +2,8 @@ import numpy as np
 
 lista=np.ones((10,14))
 p=9
+av=0.05
+t=1
 
 M = 332959;
 V = 0;
@@ -64,11 +66,14 @@ V = -0.0966236535;
 X = -29.88718083;
 dt=0.2
 lista[8]=(M,X,0,0,0,V,0,0,0,0,0,0,0,dt);
-lista[9]=(p,p,p,p,p,p,p,p,p,p,p,p,p,p);
+lista[9]=(p,p,p,p,p,p,p,p,p,p,p,t,av,p);
 print(lista)
 f = open('entrada.txt','w')
-for i in range(10):
+for i in range(p):
     for k in range(14):
       f.write(str(lista[i][k])+"\t\t")
     f.write("\n")
+for k in range (14):
+     f.write(str(lista[9][k])+"\t\t")
+f.write("\n")
 f.close()
