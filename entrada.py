@@ -1,10 +1,11 @@
 import numpy as np
 
-lista=np.ones((10,14))
-p=9
-av=0.05
-t=1
+lista=np.ones((10,14))    #lista de los datos iniciales, los tenemos por defecto
+p=9                #numero de planetas a graficar
+av=0.05         #celovidad a la que se agranda la grafica
+t=1                #tamaño de la grafica inicial o por defecto
 
+#sol
 M = 332959;
 V = 0;
 X = 0;
@@ -66,13 +67,17 @@ V = -0.0966236535;
 X = -29.88718083;
 dt=0.2
 lista[8]=(M,X,0,0,0,V,0,0,0,0,0,0,0,dt);
+#fila que contiene el numero de cuerpos, tamaño grafica, vel de alejamiento grafica, y dt de cada PLANETA
 lista[9]=(p,p,p,p,p,p,p,p,p,p,p,t,av,p);
-print(lista)
+
+#abre archivo en modo escritura
 f = open('entrada.txt','w')
+#escribe los datos de los planetas sobre el archivo
 for i in range(p):
     for k in range(14):
       f.write(str(lista[i][k])+"\t\t")
     f.write("\n")
+#escribe el numero de planetas, dts, tamaño de la grafica en el archivo
 for k in range (14):
      f.write(str(lista[9][k])+"\t\t")
 f.write("\n")
