@@ -79,7 +79,7 @@ def actualizar(i):
         #ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(-max(Dma[:,0])/2),2),c='#F4D03F')
 
 
- ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(lim/2),2),c='#F4D03F')
+ ax.scatter(Ds[i][0],Ds[i][1],Ds[i][2],s=max(2000*math.exp(-(lim2+lim*i)/2),2),c='#F4D03F')
 
  ax.scatter(Dm[:550,0],Dm[:550,1],Dm[:550,2],marker="x",s=0.1,c='gray')
  ax.plot3D(Dv[:550,0],Dv[:550,1],Dv[:550,2],'gray')
