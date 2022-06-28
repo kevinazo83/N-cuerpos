@@ -52,8 +52,6 @@ class MainFrame(Frame): #Frame principal
         self.Li=G[-1][11]                           #tamaño de la grafica inicial o por defecto
         self.fig.patch.set_facecolor(color)
         self.fig.patch.set_alpha(1)
-        #plt.rcParams['axes.facecolor'] = color
-        plt.rcParams['figure.figsize'] = (10,9)
         self.canvas= FigureCanvasTkAgg(self.fig,master=self)
         self.canvas.get_tk_widget().grid(row=3,column=2,columnspan=4)
         
