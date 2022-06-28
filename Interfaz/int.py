@@ -3,9 +3,8 @@ Created on Sun Jun 19 13:27:12 2022
 
 @author: Keven
 """
-from tkinter import *
-from tkinter import ttk
-from tkinter.messagebox import showinfo
+from tkinter import *                                                       #
+from tkinter import ttk                                                     #
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import matplotlib.pylab as plt
@@ -13,12 +12,13 @@ import matplotlib.animation as animation
 import math
 import Entrada
 
-color="#F3F3F3"
-D = np.genfromtxt("datos.txt")
-G=np.genfromtxt('entrada.txt')
+color="#F3F3F3"                         #color que se usa para el fondo de la interfaz
+D = np.genfromtxt("datos.txt")          #Lectura de datos a graficar
+G=np.genfromtxt('entrada.txt')          #variables de entrada que modifican la cantidad de planetas que se grafican,tamaño de grafica
+                                        # y si la vista se aleja o no
 
-class Raiz (Tk): #raiz principal
-    def __init__(self):
+class Raiz (Tk):                                                #raiz principal
+    def __init__(self):                                         #inicia la clase 
         
         super().__init__()                                      #llama la clase tkinter y la inicia
         self.geometry("1280x720")                               #tamaño de la ventana
@@ -37,24 +37,28 @@ class MainFrame(Frame): #Frame principal
     def __init__(self,contenedor):
         
         super().__init__(contenedor)                         #llama la clase tkinter y la inicia
-        self.config(bg=color)                                        
-        self.Boton(2,2,"Personalizar",1)        
-        self.Boton(2,3,"Iniciar simulacion",2)  
-        self.Boton(2,4,"Parar",3)                           # Grafica botones
-        self.Boton(2,5,"Siguiente paso",4)
-        self.pack(side="top")                                # Muestra en pantalla     
-        self.fig=plt.figure()# dpi=80,figsize=(9,8)
-        self.ax=self.fig.add_subplot(111,projection='3d')
-        self.ax.axis("off")
-        self.M = 20000                              #Numero de datos para cada cuerpo
-        self.C = int(G[-1][8])                      #Numero de cuerpos
-        self.L = G[-1][12]                          #velocidad a la que se aleja la grafica
-        self.Li=G[-1][11]                           #tamaño de la grafica inicial o por defecto
-        self.fig.patch.set_facecolor(color)
-        self.fig.patch.set_alpha(1)
-        self.canvas= FigureCanvasTkAgg(self.fig,master=self)
-        self.canvas.get_tk_widget().grid(row=3,column=2,columnspan=4)
+        self.config(bg=color)                                #configura el color de fondo del frame principal      
         
+        #creacion de botones
+        
+        self.Boton(2,2,"Personalizar",1)                    #Boton personalizar
+        self.Boton(2,3,"Iniciar simulacion",2)              #Boton iniciar simulación
+        self.Boton(2,4,"Parar",3)                           #Boton parar
+        self.Boton(2,5,"Siguiente paso",4)                  #Boton siguiente paso
+        
+           
+        self.fig=plt.figure()                                           #Crea la figura en matplotlib
+        self.ax=self.fig.add_subplot(111,projection='3d')               #Crea los ejes del gráfico y lo convierte a 3D
+        self.ax.axis("off")                                             #Quita la malla del fondo del gráfico
+        self.M = 20000                                                  #Numero de datos para cada cuerpo
+        self.C = int(G[-1][8])                                          #Numero de cuerpos
+        self.L = G[-1][12]                                              #velocidad a la que se aleja la grafica
+        self.Li=G[-1][11]                                               #tamaño de la grafica inicial o por defecto
+        self.fig.patch.set_facecolor(color)                             #Coloca el color de fondo del gráfico
+        self.fig.patch.set_alpha(1)                                     #Transparencia del color de fondo del gráfico
+        self.canvas= FigureCanvasTkAgg(self.fig,master=self)            #Crea la figura en tkinter y especifica que va en el frame principal
+        self.canvas.get_tk_widget().grid(row=3,column=2,columnspan=4)   #Convierte el grafico en un widget y lo pinta en pantalla
+        self.pack(side="top")                                           # Muestra en pantalla el frame principal
         
         
         
@@ -68,12 +72,12 @@ class MainFrame(Frame): #Frame principal
         
         #Estilo del boton
         
-        self.style = ttk.Style(self)
-        self.style.theme_use('alt') 
-        self.style.configure('TButton', background = '#9C9C9C', 
+        self.style = ttk.Style(self)                                   #crea el estilo
+        self.style.theme_use('alt')                                    #Selecciona el tipo de estilo
+        self.style.configure('TButton', background = '#9C9C9C',         
                              foreground = 'white', width = 20, 
-                             borderwidth=1, focusthickness=3,     )
-        self.style.map('TButton', background=[('active','#757575')])
+                             borderwidth=1, focusthickness=3,     )    #Aspectos a modificiar: color de fondo, bordes, etc...
+        self.style.map('TButton', background=[('active','#757575')])   #Cambia el color del boton cuando el cursor está encima
         
         # Botón ok
         
@@ -82,27 +86,28 @@ class MainFrame(Frame): #Frame principal
         
         # Comando de los botonones
         if command==1:
-            self.boton['command'] = self.Nueva_ventana
-            self.boton.bind("<Return>",self.Nueva_ventana)  # permite usar el boton con enter            
+            self.boton['command'] = self.Nueva_ventana              #especifica el comando del boton
+            self.boton.bind("<Return>",self.Nueva_ventana)          # permite usar el boton con enter            
         elif command==2:
-            self.boton["command"] = self.Iniciar_simulacion
-            self.boton.bind("<Return>",self.Iniciar_simulacion)  # permite usar el boton con enter
+            self.boton["command"] = self.Iniciar_simulacion         #especifica el comando del boton
+            self.boton.bind("<Return>",self.Iniciar_simulacion)     # permite usar el boton con enter
         elif command==3:
-            self.boton["command"] = self.Parar
-            self.boton.bind("<Return>",self.Parar)  # permite usar el boton con enter
+            self.boton["command"] = self.Parar                      #especifica el comando del boton
+            self.boton.bind("<Return>",self.Parar)                  # permite usar el boton con enter
         elif command==4:
-            self.boton["command"] = self.Pasos
-            self.boton.bind("<Return>",self.Pasos)  # permite usar el boton con enter
+            self.boton["command"] = self.Pasos                      #especifica el comando del boton
+            self.boton.bind("<Return>",self.Pasos)                  # permite usar el boton con enter
               
     
     def actualizar(self,i):  
-       self.ax.clear()                                  #limpia la grafica en cada iteracion
-       plt.title('tiempo='+str(int(i*0.2))+'meses')     #escribe el tiempo transcurrido en la grafica
+       self.ax.clear()                                          #limpia la grafica en cada iteracion
+       plt.title('tiempo='+str(int(i*0.2))+'meses')             #escribe el tiempo transcurrido en la grafica
+        
        #escalas de la grafica
        plt.xlim(-(self.lim2+self.lim*i),(self.lim2+self.lim*i))
        plt.ylim(-(self.lim2+self.lim*i),(self.lim2+self.lim*i))
        
-       self.ax.axis("off")
+       self.ax.axis("off")                                      #Borra los ejes de la gráfica
        for k in range(self.C):
         #dibuja las orbitas
 
@@ -118,13 +123,13 @@ class MainFrame(Frame): #Frame principal
             self.ax.scatter(self.DD[k][i*1][0],self.DD[k][i*1][1],self.DD[k][i*1][2],s=max(self.t[k]*math.exp(-(self.lim2+self.lim*i)/2),1),c=self.co[k])
    
         
-    def Parar(self):
+    def Parar(self): #Funcion que detiene la simulación
         try:
-            self.ani._stop()
+            self.ani._stop()       #en caso de no poder parar o salir un error el try except simplemente pasa
         except:
             pass
     
-    def Pasos(self):
+    def Pasos(self): #Funcion que muestra el siguiente paso de la simulación
         try:
             self.ani._step()
         except:
@@ -137,39 +142,40 @@ class MainFrame(Frame): #Frame principal
         for k in range(self.C):
           self.DD[k,:,:] = D[k::self.C,:]
         
-        #volumenes de los planetas cuando estan a una distancia 1
-        self.t=[2000,10,28,32,20,217,155,55,48]
-        #colores de los planetas
-        self.co=['#F4D03F','#C0392B','#3498DB','#3498DB','#B03A2E','#F5CBA7','#F5CBA7','#F5CBA7','#F5CBA7']
-        #pasos hasta detenerce para graficar la linea de orbita
-        self.orb=[1,550,550,1550,2750,1500,4000,11000,22000]
         
-        #posicion inicial camara
-        #self.ax.view_init(-140,-20)
+        self.t=[2000,10,28,32,20,217,155,55,48]                         #volumenes de los planetas cuando estan a una distancia 1
+        
+        self.co=['#F4D03F','#C0392B','#3498DB','#3498DB',
+                 '#B03A2E','#F5CBA7','#F5CBA7','#F5CBA7','#F5CBA7']     #colores de los planetas
+        
+        self.orb=[1,550,550,1550,2750,1500,4000,11000,22000]            #pasos hasta detenerce para graficar la linea de orbita
+        
+        
+        #self.ax.view_init(-140,-20)  #posicion inicial camara
         
         
         self.lim=self.L     #pasos a los que se va agrandando la grafica
         self.lim2=self.Li   #tamaño grafica por defecto
         
-        self.ani=animation.FuncAnimation(self.fig,self.actualizar,range(self.M),interval=500,repeat=True)
-        self.canvas.draw()
+        self.ani=animation.FuncAnimation(self.fig,self.actualizar,range(self.M),interval=500,repeat=True) #Animación de la gráfica
+        self.canvas.draw()                                                                                #Dibuja la grafica en la interfaz
         
         
     def Nueva_ventana(self,event=None): #funcion que llama a la ventana emergente para ingresar los datos
       
-        new_frame=Ingreso_datos()
-        new_frame.grab_set()
+        new_frame=Ingreso_datos()    #Llama a la clase que inicia la ventana emergente
+        new_frame.grab_set()         #No permite que se haga nada en la ventana de abajo mientras la emergente esté activa
                 
 class Ingreso_datos(Toplevel):   #ventana donde se ingresan los datos
     def __init__(self):
-        super().__init__()
+        super().__init__()          #llama a la clase tkinter
         
         self.title("Datos")         # Titulo de la ventana
         self.iconbitmap("sol.ico")  # Icono de la ventana
         self.entradas(0,1)          # Llama a la funcion que muestra los widgets 
         self.Botones()              # Llama a la función que muestra los botones
         #self.MASA.focus()
-        self.N.focus()
+        self.N.focus()              #posiciona el cursor sobre la caja de entrada
         
     def entradas(self,f,c):      
         #etiquetas de datos  
@@ -213,9 +219,9 @@ class Ingreso_datos(Toplevel):   #ventana donde se ingresan los datos
         self.boton_cancelar.bind("<Return>")  
         
         
-    def Salir(self):
+    def Salir(self):      #Funicon que cierra la ventana
         
-        self.destroy()    
+        self.destroy()    #cierra la ventana emergente
         
         
     
@@ -236,8 +242,8 @@ class Ingreso_datos(Toplevel):   #ventana donde se ingresan los datos
             datos.write(",")
             datos.write(tamaño)
             
-        Entrada
-        self.Salir()
+        Entrada         #ejecuta el codigo de python que genera los valores iniciales de c++
+        self.Salir()    #cierra la ventana emergente
         
         
 def main():
