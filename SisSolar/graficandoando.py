@@ -11,7 +11,7 @@ N = 20000 #Numero de datos para cada cuerpo
 C = int(G[-1][8]) #Numero de cuerpos
 L = G[-1][12]     #velocidad a la que se aleja la grafica
 Li=G[-1][11]      #tamaño de la grafica inicial o por defecto
-print(L)
+
 
 #arreglo que contiene el numero de cuerpos; numero de datos; y numero de ejes
 DD=np.ones((C,N,3))

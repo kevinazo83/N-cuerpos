@@ -1,9 +1,13 @@
 import numpy as np
+cantidad = int(input("Escriba el número de planetas que desea graficar(de 1 a 8): "))
+cantidad2 = float(input("Escriba el tamaño de ejes de la grafica en unidades astronomicas (de 1.0 a 40.0)"))
+cantidad3 = float(input("A que velocidad desea alejarse del sol (de 0.0 a 3.0)"))
+
 
 lista=np.ones((10,14))    #lista de los datos iniciales, los tenemos por defecto
-p=9                #numero de planetas a graficar
-av=0.05         #celovidad a la que se agranda la grafica
-t=1                #tamaño de la grafica inicial o por defecto
+p=cantidad+1            #numero de planetas a graficar
+av=cantidad3       #celovidad a la que se agranda la grafica 0.5
+t=cantidad2                #tamaño de la grafica inicial o por defecto 1
 
 #sol
 M = 332959;
