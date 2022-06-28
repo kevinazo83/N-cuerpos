@@ -9,9 +9,11 @@ import numpy as np
 import matplotlib.pylab as plt
 import matplotlib.animation as animation
 import math
+import Entrada
 
 color="#F3F3F3"
-D=np.genfromtxt("datos.txt")
+D = np.genfromtxt("datos.txt")
+G=np.genfromtxt('entrada.txt')
 
 class Raiz (Tk): #raiz principal
     def __init__(self):
@@ -38,21 +40,25 @@ class MainFrame(Frame): #Frame principal
         self.tt = 300 #dts que se grafican
         self.config(bg=color)
                                                
-        self.Boton(3,2,"Personalizar",1)        
-        self.Boton(3,3,"Iniciar simulacion",2)  
-        self.Boton(3,4,"pausar",3)                           # Grafica botones
+        self.Boton(2,2,"Personalizar",1)        
+        self.Boton(2,3,"Iniciar simulacion",2)  
+        self.Boton(2,4,"Parar",3)                           # Grafica botones
+        self.Boton(2,5,"Siguiente paso",4)
         self.pack(side="top")                                # Muestra en pantalla     
-        self.fig=plt.figure() #figsize=(12,12)
+        self.fig=plt.figure()# dpi=80,figsize=(9,8)
         self.ax=self.fig.add_subplot(111,projection='3d')
-        self.size=400
-        self.min_display_size = 10
-        self.display_log_base = 1.3
-        plt.rcParams['axes.facecolor'] = color
-        plt.rcParams['figure.figsize'] = (9,8)
-        self.canvas= FigureCanvasTkAgg(self.fig,master=self)
-        self.canvas.get_tk_widget().grid(row=2,column=2,columnspan=3)
+        self.ax.axis("off")
+        self.M = 20000 #Numero de datos para cada cuerpo
+        self.C = int(G[-1][8]) #Numero de cuerpos
+        self.L = G[-1][12]     #velocidad a la que se aleja la grafica
+        self.Li=G[-1][11]      #tamaño de la grafica inicial o por defecto
         self.fig.patch.set_facecolor(color)
-        self.Crear_planetas()
+        self.fig.patch.set_alpha(1)
+        #plt.rcParams['axes.facecolor'] = color
+        plt.rcParams['figure.figsize'] = (10,9)
+        self.canvas= FigureCanvasTkAgg(self.fig,master=self)
+        self.canvas.get_tk_widget().grid(row=3,column=2,columnspan=4)
+        
         
         
         
@@ -83,87 +89,74 @@ class MainFrame(Frame): #Frame principal
             self.boton['command'] = self.Nueva_ventana
             self.boton.bind("<Return>",self.Nueva_ventana)  # permite usar el boton con enter            
         elif command==2:
-            self.boton["command"] = self.reanudar
-            self.boton.bind("<Return>",self.reanudar)  # permite usar el boton con enter
+            self.boton["command"] = self.Iniciar_simulacion
+            self.boton.bind("<Return>",self.Iniciar_simulacion)  # permite usar el boton con enter
         elif command==3:
-            self.boton["command"] = self.pausa
-            self.boton.bind("<Return>",self.pausa)  # permite usar el boton con enter
-            
-    def animacion(self):
-        
-        self.ani=animation.FuncAnimation(self.fig,self.actualizar,range(self.M),interval=0.0000001,repeat=True)
-        self.canvas.draw()
-    
-    def Crear_planetas(self):
-        
-        self.Ds = np.empty(self.M*3,dtype=float)
-        self.Dm = np.empty(self.M*3,dtype=float)
-        self.Dv = np.empty(self.M*3,dtype=float)
-        self.Dt = np.empty(self.M*3,dtype=float)
-        self.Dma = np.empty(self.M*3,dtype=float)
-        self.Dj = np.empty(self.M*3,dtype=float)
-        self.Dsa = np.empty(self.M*3,dtype=float)
-        self.Du = np.empty(self.M*3,dtype=float)
-        self.Dn = np.empty(self.M*3,dtype=float)
-        self.Pasar_datos()
-    
-    def Pasar_datos(self):
-        for i in range(self.M):
-        	for j in range(3):
-        		self.Ds[3*i+j] = D[i*self.C,j]
-        		self.Dm[3*i+j] = D[i*self.C+1,j]
-        		self.Dv[3*i+j] = D[i*self.C+2,j]
-        		self.Dt[3*i+j] = D[i*self.C+3,j]
-        		self.Dma[3*i+j] = D[i*self.C+4,j]
-        		self.Dj[3*i+j] = D[i*self.C+5,j]
-        		self.Dsa[3*i+j] = D[i*self.C+6,j]
-        		self.Du[3*i+j] = D[i*self.C+7,j]
-        		self.Dn[3*i+j] = D[i*self.C+8,j]
-        self.cambiar_tamaño()
-        
-    def cambiar_tamaño(self):    
-        self.Ds = np.reshape(self.Ds,(self.M,3))
-        self.Dm = np.reshape(self.Dm,(self.M,3))
-        self.Dv = np.reshape(self.Dv,(self.M,3))
-        self.Dt = np.reshape(self.Dt,(self.M,3))
-        self.Dma = np.reshape(self.Dma,(self.M,3))
-        self.Dj = np.reshape(self.Dj,(self.M,3))
-        self.Dsa = np.reshape(self.Dsa,(self.M,3))
-        self.Du = np.reshape(self.Du,(self.M,3))
-        self.Dn = np.reshape(self.Dn,(self.M,3))
-        self.animacion()
+            self.boton["command"] = self.Parar
+            self.boton.bind("<Return>",self.Parar)  # permite usar el boton con enter
+        elif command==4:
+            self.boton["command"] = self.Pasos
+            self.boton.bind("<Return>",self.Pasos)  # permite usar el boton con enter
+              
     
     def actualizar(self,i):  
-       self.ax.clear()
-       plt.title('tiempo='+str(int(i*0.1))+'meses')
-       plt.xlim(min(self.Dsa[:,0]),max(self.Dsa[:,0]))
-       plt.ylim(min(self.Dsa[:,1]),max(self.Dsa[:,1]))
-    
-       self.ax.scatter(self.Ds[i][0],self.Ds[i][1],self.Ds[i][2],s=max(2000*math.exp(-max(self.Dsa[:,0])/2),2),c='#F4D03F')
-    
-       self.ax.plot3D(self.Dm[:50,0],self.Dm[:50,1],self.Dm[:50,2],'gray')
-       self.ax.plot3D(self.Dv[:150,0],self.Dv[:150,1],self.Dv[:150,2],'gray')
-       self.ax.plot3D(self.Dt[:150,0],self.Dt[:150,1],self.Dt[:150,2],'gray')
-       self.ax.plot3D(self.Dma[:250,0],self.Dma[:250,1],self.Dma[:250,2],'gray')
-       self.ax.plot3D(self.Dj[:1500,0],self.Dj[:1500,1],self.Dj[:1500,2],'gray')
-       self.ax.plot3D(self.Dsa[:4000,0],self.Dsa[:4000,1],self.Dsa[:4000,2],'gray')
-       self.ax.plot3D(self.Du[:11000,0],self.Du[:11000,1],self.Du[:11000,2],'gray')
-       self.ax.plot3D(self.Dn[:22000,0],self.Dn[:22000,1],self.Dn[:22000,2],'gray')
-
-       self.ax.scatter(self.Dm[i][0],self.Dm[i][1],self.Dm[i][2],s=max(10*math.exp(-max(self.Dsa[:,0])/2),1),c='#C0392B')
-       self.ax.scatter(self.Dv[i][0],self.Dv[i][1],self.Dv[i][2],s=max(28*math.exp(-max(self.Dsa[:,0])/2),1),c='#3498DB')
-       self.ax.scatter(self.Dt[i][0],self.Dt[i][1],self.Dt[i][2],s=max(32*math.exp(-max(self.Dsa[:,0])/2),1),c='#3498DB')
-       self.ax.scatter(self.Dma[i][0],self.Dma[i][1],self.Dma[i][2],s=max(20*math.exp(-max(self.Dsa[:,0])/2),1),c='#B03A2E')
-       self.ax.scatter(self.Dj[i][0],self.Dj[i][1],self.Dj[i][2],s=max(217*math.exp(-max(self.Dsa[:,0])/2),1),c='#F5CBA7')
-       self.ax.scatter(self.Dsa[i][0],self.Dsa[i][1],self.Dsa[i][2],s=max(155*math.exp(-max(self.Dsa[:,0])/2),1))
-       self.ax.scatter(self.Du[i][0],self.Du[i][1],self.Du[i][2],s=max(55*math.exp(-max(self.Dsa[:,0])/2),1))
-       self.ax.scatter(self.Dn[i][0],self.Dn[i][1],self.Dn[i][2],s=max(48*math.exp(-max(self.Dsa[:,0])/2),1))
-    
-    def pausa(self):
-        self.ani.event_source.stop()
+       self.ax.clear()  #limpia la grafica en cada iteracion
+       plt.title('tiempo='+str(int(i*0.2))+'meses')     #escribe el tiempo transcurrido en la grafica
+       #escalas de la grafica
+       plt.xlim(-(self.lim2+self.lim*i),(self.lim2+self.lim*i))
+       plt.ylim(-(self.lim2+self.lim*i),(self.lim2+self.lim*i))
+       
+       self.ax.axis("off")
+       for k in range(self.C):
+        #dibuja las orbitas
+        #ax.plot3D(DD[k,:orb[k],0],DD[k,:orb[k],1],DD[k,:orb[k],2],'gray')
+        self.ax.scatter(self.DD[k,:self.orb[k],0],self.DD[k,:self.orb[k],1],self.DD[k,:self.orb[k],2],marker="x",s=0.1,c='gray')
+        if(k==0):
+            #dibuja el sol
+            self.ax.scatter(self.DD[k][i*10][0],self.DD[k][i*10][1],self.DD[k][i*10][2],s=max(self.t[k]*math.exp(-(self.lim2+self.lim*i)/1.5),1),c=self.co[k])
+        elif(k<=5):
+                #dibuja los planetas hasta marte
+            self.ax.scatter(self.DD[k][i*10][0],self.DD[k][i*10][1],self.DD[k][i*10][2],s=max(self.t[k]*math.exp(-(self.lim2+self.lim*i)/2),1),c=self.co[k])
+        else:
+            #dibuja los planetas desde jupiter en adelante
+            self.ax.scatter(self.DD[k][i*1][0],self.DD[k][i*1][1],self.DD[k][i*1][2],s=max(self.t[k]*math.exp(-(self.lim2+self.lim*i)/2),1),c=self.co[k])
+   
         
-    def reanudar(self):
-        self.ani.event_source.start()
+    def Parar(self):
+        try:
+            self.ani._stop()
+        except:
+            pass
+    
+    def Pasos(self):
+        try:
+            self.ani._step()
+        except:
+            pass
+        
+    def Iniciar_simulacion(self):
+        self.DD=np.ones((self.C,self.M,3))
+
+        #separa todos los datos de entrada, en un arreglo para cada cuerpo
+        for k in range(self.C):
+          self.DD[k,:,:] = D[k::self.C,:]
+        
+        #volumenes de los planetas cuando estan a una distancia 1
+        self.t=[2000,10,28,32,20,217,155,55,48]
+        #colores de los planetas
+        self.co=['#F4D03F','#C0392B','#3498DB','#3498DB','#B03A2E','#F5CBA7','#F5CBA7','#F5CBA7','#F5CBA7']
+        #pasos hasta detenerce para graficar la linea de orbita
+        self.orb=[1,550,550,1550,2750,1500,4000,11000,22000]
+        
+        #posicion inicial camara
+        #self.ax.view_init(-140,-20)
+        
+        
+        self.lim=self.L #pasos a los que se va agrandando la grafica
+        self.lim2=self.Li   #tamaño grafica por defecto
+        
+        self.ani=animation.FuncAnimation(self.fig,self.actualizar,range(self.M),interval=500,repeat=True)
+        self.canvas.draw()
         
         
     def Nueva_ventana(self,event=None): #funcion que llama a la ventana emergente para ingresar los datos
@@ -186,25 +179,24 @@ class Ingreso_datos(Toplevel):   #ventana donde se ingresan los datos
         #etiquetas de datos  
         
         self.label_n=self.Etiqueta(0, 0, "Número de cuerpos")
-        self.label_masa=self.Etiqueta(1,0,"Masa:")
-        self.label_posicion=self.Etiqueta(2,0,"Posición:")
-        self.label_velocidad=self.Etiqueta(3,0,"Velocidad")
+        self.label_masa=self.Etiqueta(1,0,"Alejar animación(0 para no):")
+        self.label_posicion=self.Etiqueta(2,0,"Tamaño de la gráfica")
+        
         
         #variables de entrada de datos
         self.n=StringVar()  
-        self.masa=StringVar()
-        self.posicion=StringVar()
-        self.velocidad=StringVar()
+        self.acercar=StringVar()
+        self.tamaño=StringVar()
+        
         
         #cajas de texto donde  se ingresan los datos
         self.N=ttk.Entry(self,textvariable=self.n,justify=CENTER)
         self.N.grid(row=f,column=c,pady=5,padx=5)   
-        self.MASA=ttk.Entry(self,textvariable=self.masa,justify=CENTER)
-        self.MASA.grid(row=f+1,column=c,pady=5,padx=5)
-        self.POSICION=ttk.Entry(self,textvariable=self.posicion,justify=CENTER)
-        self.POSICION.grid(row=f+2,column=c,pady=5,padx=5)
-        self.VELOCIDAD=ttk.Entry(self,textvariable=self.velocidad,justify=CENTER)
-        self.VELOCIDAD.grid(row=f+3,column=c,pady=5,padx=5)
+        self.ACERCAR=ttk.Entry(self,textvariable=self.acercar,justify=CENTER)
+        self.ACERCAR.grid(row=f+1,column=c,pady=5,padx=5)
+        self.TAMAÑO=ttk.Entry(self,textvariable=self.tamaño,justify=CENTER)
+        self.TAMAÑO.grid(row=f+2,column=c,pady=5,padx=5)
+        
     
     def Etiqueta(self,f,c,Texto_label): # etiquetas    
     
@@ -219,10 +211,10 @@ class Ingreso_datos(Toplevel):   #ventana donde se ingresan los datos
         self.boton_guardar.grid(row=f,column=c,padx=5,pady=(0,5))    # graficar el boton en la posición 
         self.boton_guardar.bind("<Return>")                          # el comando se ejecuta al presionar enter   
        
-        self.boton_salir = ttk.Button(self, text="Salir")          # Botón Salir
-        self.boton_salir['command'] = self.Salir                   # comando que ejecuta el boton al presionarlo
-        self.boton_salir.grid(row=f,column=c+1,padx=5,pady=(0,5))  # graficar el boton en la posición 
-        self.boton_guardar.bind("<Return>")  
+        self.boton_cancelar = ttk.Button(self, text="Cancelar")       # Botón cancelar
+        self.boton_cancelar['command'] = self.Salir                   # comando que ejecuta el boton al presionarlo
+        self.boton_cancelar.grid(row=f,column=c+1,padx=5,pady=(0,5))  # graficar el boton en la posición 
+        self.boton_cancelar.bind("<Return>")  
         
         
     def Salir(self):
@@ -232,29 +224,25 @@ class Ingreso_datos(Toplevel):   #ventana donde se ingresan los datos
         
     
     def Guardar(self):
-      
+        
         # obtener los datos de las variables StringVar()
         m=self.n.get()
-        masa=self.masa.get()            
-        velocidad=self.velocidad.get()
-        posicion=self.posicion.get()
-        print(masa,"\t",velocidad,"\t", posicion, "\t",m)
+        acercar=self.acercar.get()            
+        tamaño=self.tamaño.get()
+
         
         #escribir las variables en un archivo txt
         
-        with open("Entry.txt","a") as datos:
-            datos.write(masa)
+        with open("N_planetas.txt","w") as datos:
+            datos.write(m)
             datos.write(",")
-            datos.write(posicion)
+            datos.write(acercar)
             datos.write(",")
-            datos.write(velocidad)
+            datos.write(tamaño)
             datos.write("\n")
-        self.masa.set("")
-        self.velocidad.set("")
-        self.posicion.set("")
-        self.MASA.focus()
-        
-        
+            
+        Entrada
+        self.Salir()
         
         
 def main():
@@ -265,3 +253,4 @@ def main():
 
 if __name__=="__main__":       #Hace que solo se pueda ejecutar el programa solo si se llama directamente y no desde otro código
     main()   
+    
