@@ -97,9 +97,33 @@ class MainFrame(Frame): #Frame principal
         elif command==4:
             self.boton["command"] = self.Pasos                      #especifica el comando del boton
             self.boton.bind("<Return>",self.Pasos)                  # permite usar el boton con enter
-              
+     
+    def Iniciar_simulacion(self):
+        self.DD=np.ones((self.C,self.M,3))
+
+        #separa todos los datos de entrada, en un arreglo para cada cuerpo
+        for k in range(self.C):
+          self.DD[k,:,:] = D[k::self.C,:]
+        
+        
+        self.t=[2000,10,28,32,20,217,155,55,48]                         #volumenes de los planetas cuando estan a una distancia 1
+        
+        self.co=['#F4D03F','#C0392B','#3498DB','#3498DB',
+                 '#B03A2E','#F5CBA7','#F5CBA7','#F5CBA7','#F5CBA7']     #colores de los planetas
+        
+        self.orb=[1,550,550,1550,2750,1500,4000,11000,22000]            #pasos hasta detenerce para graficar la linea de orbita
+        
+        
+        #self.ax.view_init(-140,-20)  #posicion inicial camara
+        
+        
+        self.lim=self.L     #pasos a los que se va agrandando la grafica
+        self.lim2=self.Li   #tamaño grafica por defecto
+        
+        self.ani=animation.FuncAnimation(self.fig,self.actualizar,range(self.M),interval=500,repeat=True) #Animación de la gráfica
+        self.canvas.draw() #dibuja la gráfica en la interfaz
     
-    def actualizar(self,i):  
+    def actualizar(self,i):  #actualiza los datos en pantalla
        self.ax.clear()                                          #limpia la grafica en cada iteracion
        plt.title('tiempo='+str(int(i*0.2))+'meses')             #escribe el tiempo transcurrido en la grafica
         
@@ -134,32 +158,7 @@ class MainFrame(Frame): #Frame principal
             self.ani._step()
         except:
             pass
-        
-    def Iniciar_simulacion(self):
-        self.DD=np.ones((self.C,self.M,3))
-
-        #separa todos los datos de entrada, en un arreglo para cada cuerpo
-        for k in range(self.C):
-          self.DD[k,:,:] = D[k::self.C,:]
-        
-        
-        self.t=[2000,10,28,32,20,217,155,55,48]                         #volumenes de los planetas cuando estan a una distancia 1
-        
-        self.co=['#F4D03F','#C0392B','#3498DB','#3498DB',
-                 '#B03A2E','#F5CBA7','#F5CBA7','#F5CBA7','#F5CBA7']     #colores de los planetas
-        
-        self.orb=[1,550,550,1550,2750,1500,4000,11000,22000]            #pasos hasta detenerce para graficar la linea de orbita
-        
-        
-        #self.ax.view_init(-140,-20)  #posicion inicial camara
-        
-        
-        self.lim=self.L     #pasos a los que se va agrandando la grafica
-        self.lim2=self.Li   #tamaño grafica por defecto
-        
-        self.ani=animation.FuncAnimation(self.fig,self.actualizar,range(self.M),interval=500,repeat=True) #Animación de la gráfica
-        self.canvas.draw()                                                                                #Dibuja la grafica en la interfaz
-        
+               
         
     def Nueva_ventana(self,event=None): #funcion que llama a la ventana emergente para ingresar los datos
       
