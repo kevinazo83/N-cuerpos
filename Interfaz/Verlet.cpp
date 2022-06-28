@@ -8,7 +8,7 @@
 //#include<conio.h>
 
 // Unidades:
-// Masa = Masa terrestre, Distancia = U.astronómica, tiempo = mes.
+// Masa = Masa terrestre, Distancia = U.astronÃ³mica, tiempo = mes.
 
 //Variables globales
 double N = 20000; // Numero de pasos
@@ -26,7 +26,7 @@ class cuerpo {
 
 		//Inicializar el cuerpo
 		void init(double m0, double x0, double y0, double z0, double vx0, double vy0, double vz0,double Fx0, double Fy0, double Fz0 ,double Ax0, double Ay0, double Az0,double dt0);
-		//Imprime la posición del cuerpo
+		//Imprime la posiciÃ³n del cuerpo
 		void print();
 
 };
@@ -60,7 +60,7 @@ void cuerpo::print(){
 	//Hace la fuerza neta sobre un cuerpo igual a cero antes de empezar una iteracion
 	void limpF(cuerpo &a);
 
-	//Actualiza la posición de un cuerpo
+	//Actualiza la posiciÃ³n de un cuerpo
     void Tstep(cuerpo &a);
 
     void Vstep(cuerpo &a);
